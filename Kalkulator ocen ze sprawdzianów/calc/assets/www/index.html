@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" 
+        <title>Kalkulator ocen ze sprawdzianów.</title>
+        <style>
+            table{
+                border:solid;
+                margin:0 auto;
+                font-size:200%;
+            }
+            td{
+                text-align:center;
+            }
+            #bazaOut{
+                text-align:center;
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+            <input id="bazaIn" style="width:100%; min-height: 30px; text-align:center;" value="100" />
+        </form>
+        <button id="goButton" style="width: 100%; min-height: 30px; text-align: center;">Go!</button>
+        <br />
+        <div id="bazaOut">Baza wynosi: </div>
+        <div id="out"></div>
+
+        <script>
+            var baza = document.getElementById("bazaIn").value;
+            var go = document.getElementById("goButton");
+            var out = document.getElementById("out");
+            go.addEventListener("click", onClickGo, false);
+            var oceny = ["Niedostateczny","Dopuszczający","Dostateczny","Dostateczny+","Dobry","Dobry+","Bardzo Dobry","Celujacy"];
+            var progi = [39,40,50,65,70,85,90,100]
+
+                function onClickGo() {
+                    baza = document.getElementById("bazaIn").value
+                    document.getElementById("bazaOut").innerHTML = "Baza wynosi: " + baza;
+                    rysujTabele();
+                }
+
+                function rysujTabele(){
+                    var temp="<table>";
+                    for (var i = 0; i < oceny.length; i++) {
+                        temp += "<tr><td>" + oceny[i] + "</td><td>" + Math.floor((baza / 100) * progi[i]) + "</td></tr>";
+                    }
+                    temp += "</table>";
+                    out.innerHTML = temp;
+                }
+        </script>
+        <script type="text/javascript" src="cordova.js"></script>
+    </body>
+</html>
