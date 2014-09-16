@@ -1,36 +1,24 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
+<<<<<<< HEAD
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must ends with two \r.
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
+.*.sw?
+*.cso
+tmp/
+*.xcodeproj/* !*.xcodeproj/project.pbxproj
+lib/iphone/phonegap-min.js
+lib/iphone/phonegap.js
+android/bin
+android/gen
+/bin
+/src
+/cordova
+/gen
+/res
+=======
+default.properties
+gen
+assets/www/phonegap.js
+local.properties
+framework/phonegap.jar
+framework/bin
+framework/assets/www/.DS_Store
+>>>>>>> fbe96f891bc56cfff38037bf6087d60ceb17e286

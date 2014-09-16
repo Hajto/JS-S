@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>Hello buttons.</title>
+        <style>
+            #myMenu {
+                width:200px;
+                height:500px;
+                background:#000000;
+                visibility:hidden;
+            }
+
+        </style>
+        <script>
+            document.addEventListener("deviceready", onReady, false);
+
+            function onReady() {
+                var info = "";
+                info += "\nmodel: " + device.model;
+                info += "\nsystem: " + device.platform;
+                info += "\nwersja: " + device.version;
+                info += "\nuuid: " + device.uuid;
+                alert(info);
+                //jaki internet
+                alert(navigator.network.connection.type);
+                switch (navigator.network.connection.type) {
+                    case Connection.CELL_3G:
+                        alert("kozak");
+                        break;
+                    case Connection.NONE:
+                        alert("Lipa, nima neta...");
+                        break;
+                }
+                //buttone
+                document.addEventListener("menubutton", onMenu, false);
+                document.addEventListener("homebutton", onHome, false);
+                document.addEventListener("searchbutton", onSearch, false);
+                document.addEventListener("backbutton", onBack, false);
+            }
+
+            function onMenu() {
+                var menu = document.getElementById("myMenu");
+                menu.style.visibility = "visible";
+            }
+            function onHome() {
+                prompt("Do domu...");
+                var czy = confirm("Czy chcesz wyjsc z aplikacji?");
+                if (czy) navigator.app.exitApp();
+            }
+            function onSearch() {
+                alert("Kakaszatan");
+            }
+            function onBack() {
+                var menu = document.getElementById("myMenu");
+                menu.style.visibility = "hidden";
+            }
+
+        </script>
+    </head>
+    <body>
+        <h1>T: informacje o komórce</h1>
+        <h1>T: Czy jest internet</h1>
+        <h1>T: Obsługa buttonów na emulatorze</h1>
+        <script type="text/javascript" src="cordova.js"></script>
+        <div id="myMenu"></div>
+    </body>
+</html>
