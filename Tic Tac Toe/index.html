@@ -12,9 +12,10 @@
         var size = 3;
         var mainLogicArray = [];
         var winner = "z";
+        var safetyCounter = 0;
         //Dźwięki
-        var dzwiekX = new Audio("/sfx/x.wav");
-        var dzwiekY = new Audio("/sfx/y.wav");
+        var dzwiekX = new Audio("sfx/x.wav");
+        var dzwiekY = new Audio("sfx/y.wav");
         //Konfiguracja
         var sounds = true;
 
@@ -66,8 +67,8 @@
                     small.style.left = i * (width / wielkosc) + "px";
                     small.style.top = j * (width / wielkosc) + "px";
                     small.style.border = "solid";
-                    small.style.borderColor = "#00ff00";
-                    small.style.background = "#0000ff";
+                    small.style.borderColor = "#424242";
+                    small.style.background = "#BCBCBC";
                     small.addEventListener("mousedown", onDown, false);
                     small.id = i + "" + j;
                 }
@@ -82,27 +83,37 @@
             klikniety.appendChild(img);
             klikniety.removeEventListener("mousedown", onDown);
             //zmienic 3 na argument ze switcha...
-            img.width = width/size;
+            img.width = width / size;
 
+            console.log(e.target);
 
-            klikniety.style.background = "#ff0000";
+            klikniety.style.background = "#E9E9E9";
             if (stan) {
-                img.src = "/img/krzyz.png";
+                img.src = "img/krzyz.png";
                 mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "x";
                 dzwiekX.play();
+                safetyCounter++;
             } else {
-                img.src = "/img/kolo.png";
+                img.src = "img/kolo.png";
                 mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "y";
                 dzwiekY.play();
             }
             stan = !stan;
+
+            if (safetyCounter >= 2) {
+                whoIsTheWinner();
+                if (winner == "x") alert("Wygrał gracz pierwszy.");
+                else if (winner == "y") alert("Wygrał gracz drugi.");
+                if (winner != "z") if (confirm("Czy chcesz zagrać ponownie?")) resetFunction();
+                    
+            }
         }
 
         //Sprawdzenie kolumny
         function checkCol() {
             for (var i = 0; i < size; i++)
                 for(var j=0; j < size;j++)
-                    if (mainLogicArray[i][j] == mainLogicArray[i][j + 1] && mainLogicArray[i][j + 1] == mainLogicArray[i][j + 2] && mainLogicArray[i][j] != "z" && winner == "z") {
+                    if (mainLogicArray[i][j] == mainLogicArray[i][j + 1] && mainLogicArray[i][j + 1] == mainLogicArray[i][j + 2] && mainLogicArray[i][j] != "z" && winner=="z") {
                         console.log(mainLogicArray[i][j]);
                         winner = mainLogicArray[i][j];
                         break;
@@ -112,38 +123,37 @@
         function checkRow() {
             for (var i = 0; i < size-2; i++)
                 for (var j = 0; j < size; j++)
-                    if (mainLogicArray[i][j] == mainLogicArray[i + 1][j] && mainLogicArray[i + 1][j] == mainLogicArray[i + 2][j] && mainLogicArray[i][j] != "z" && winner == "z") {
+                    if (mainLogicArray[i][j] == mainLogicArray[i+1][j] && mainLogicArray[i+1][j]==mainLogicArray[i+2][j] && mainLogicArray[i][j] != "z" && mainLogicArray[i+1][j] != "z" && winner == "z") {
                         console.log(mainLogicArray[i][j]);
                         winner = mainLogicArray[i][j];
                         break;
                     }
         }
         //Sprawdzenie przekatnej
-        function checkDiagMinus() {
-            for (var i = 0; i < size-2; i++)
-                for (var j = 0; j < size-2; j++)
-                    if (mainLogicArray[i][j] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j + 2] && mainLogicArray[i][j] != "z" && winner == "z") {
-                        console.log(mainLogicArray[i][j]);
-                        winner = mainLogicArray[i][j];
-                        break;
+        function checkDiag() {
+            for (var i = 0; i < size - 2; i++) {
+                for (var j = 0; j < size - 2; j++) {
+                    if (mainLogicArray[i][j] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j + 2] && winner=="z") {
+                        if (mainLogicArray[i + 1][j + j] != "z") winner = mainLogicArray[i+1][j+1];
                     }
-        }
-        function checkDiagPlus() {
-            for (var i = 0; i < size - 2; i++)
-                for (var j = 0; j < size - 2; j++)
-                    if (mainLogicArray[i][j+2] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j] && mainLogicArray[i][j] != "z" && winner == "z") {
-                        console.log(mainLogicArray[i][j]);
-                        winner = mainLogicArray[i][j];
-                        break;
+                }
+            }
+            if (winner == "z") {
+                for (var i = 0; i < size - 2 ; i++) {
+                    for (var j = 0; j < size - 2; j++) {
+                        if (mainLogicArray[i][j + 2] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j] && winner == "z") {
+                            if (mainLogicArray[i + 1][j + j] != "z") winner = mainLogicArray[i + 1][j + 1];
+                        }
                     }
+                }
+            }
         }
 
         //Check all
         function whoIsTheWinner() {
             if (winner != "x" && winner != "y") checkRow();
             if (winner != "x" && winner != "y") checkCol();
-            if (winner != "x" && winner != "y") checkDiagMinus();
-            if (winner != "x" && winner != "y") checkDiagPlus();
+            if (winner != "x" && winner != "y") checkDiag();
             
         }
 
@@ -158,6 +168,8 @@
             div.innerHTML = "";
             ArrayToNothing();
             addSmallDivs(size, width);
+            winner="z";
+            safetyCounter=0;
         }
         function buttonStyle() {
             soundsButton = document.getElementById("soundsToggler");
@@ -188,6 +200,9 @@
         }
     </script>
     <style>
+        html, body {
+            background-color: #E9E9E9;
+        }
         #mySelect{
             margin:0 auto;
             display: block;
