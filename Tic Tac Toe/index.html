@@ -8,7 +8,7 @@
     <script>
         window.addEventListener("load", onLoad, false);
         //Zmienne globalne
-        var width = (window.innerWidth > 0) ? (window.innerWidth / 100) * 80 : (screen.width / 100) * 80;
+        var width = (window.innerWidth > 0) ? (window.innerWidth / 100) * 60 : (screen.width / 100) * 60;
         var size = 3;
         var mainLogicArray = [];
         var winner = "z";
@@ -18,13 +18,20 @@
         var dzwiekY = new Audio("sfx/y.wav");
         //Konfiguracja
         var sounds = true;
+        //Cofanie
+        var tempBack = "";
+        //Style
+        var colorBackground = "#E9E9E9";
+        var colorBorder = "#424242";
+        var colorBackgroundBefore = "#BCBCBC";
+
 
         function onLoad() {
             ArrayToNothing();
-            selectStyle();
-            buttonStyle();
             addBig(width);
             addSmallDivs(size, width);
+            selectStyle();
+            buttonStyle();
         }
 
         function ArrayToNothing() {
@@ -53,6 +60,7 @@
             div.style.height = width + "px";
             div.style.position = "relative";
             div.style.margin = "0 auto";
+            document.getElementById("wrapper").style.background = colorBackground;
         }
 
         function addSmallDivs(wielkosc, width) {
@@ -67,8 +75,8 @@
                     small.style.left = i * (width / wielkosc) + "px";
                     small.style.top = j * (width / wielkosc) + "px";
                     small.style.border = "solid";
-                    small.style.borderColor = "#424242";
-                    small.style.background = "#BCBCBC";
+                    small.style.borderColor = colorBorder;
+                    small.style.background = colorBackgroundBefore;
                     small.addEventListener("mousedown", onDown, false);
                     small.id = i + "" + j;
                 }
@@ -87,7 +95,7 @@
 
             console.log(e.target);
 
-            klikniety.style.background = "#E9E9E9";
+            klikniety.style.background = colorBackground;
             if (stan) {
                 img.src = "img/krzyz.png";
                 mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "x";
@@ -98,6 +106,7 @@
                 mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "y";
                 dzwiekY.play();
             }
+            tempBack = klikniety.id;
             stan = !stan;
 
             if (safetyCounter >= 2) {
@@ -105,8 +114,8 @@
                 if (winner == "x") alert("Wygrał gracz pierwszy.");
                 else if (winner == "y") alert("Wygrał gracz drugi.");
                 if (winner != "z") if (confirm("Czy chcesz zagrać ponownie?")) resetFunction();
-                    
             }
+            if (safetyCounter == Math.floor(size * size / 2) + size%2) alert("Remis");
         }
 
         //Sprawdzenie kolumny
@@ -162,22 +171,40 @@
             select = document.getElementById("mySelect");
             select.style.width = width + "px";
             select.addEventListener("change", onChange, false);
+            styler = document.getElementById("styler");
+            styler.style.width = width + "px";
+            styler.addEventListener("change", changeStyle, false);
+        }
+
+        function backFunction() {
+            stan = !stan;
+            mainLogicArray[parseInt(tempBack[0])][parseInt(tempBack[1])] = "z";
+            document.getElementById(tempBack).innerHTML = "<img />";
+            document.getElementById(tempBack).style.background = colorBackgroundBefore;
+            document.getElementById(tempBack).addEventListener("click", onDown, false);
         }
         function resetFunction() {
             var div = document.getElementById("mainDiv");
+            div.style.background = colorBackground;
             div.innerHTML = "";
             ArrayToNothing();
             addSmallDivs(size, width);
             winner="z";
-            safetyCounter=0;
+            safetyCounter = 0;
+            stan = true;
         }
         function buttonStyle() {
             soundsButton = document.getElementById("soundsToggler");
             resetButton = document.getElementById("resetter");
+            backbutton = document.getElementById("back")
             soundsButton.addEventListener("click", toggleSounds, false);
             resetButton.addEventListener("click", resetFunction, false);
+            document.addEventListener("backbutton", backFunction, false);
+            backbutton.addEventListener("click", backFunction, false);
             soundsButton.style.width = width + "px";
             resetButton.style.width = width + "px";
+            backbutton.style.width = width + "px";
+            //document.addEventListener("backbutton", backFunction, false);
         }
         function muteSounds() {
             dzwiekX.muted = true;
@@ -198,24 +225,57 @@
                 soundsButton.innerHTML = "Wyłącz dźwięk.";
             }
         }
+        function changeStyle() {
+            var styler = document.getElementById("styler");
+            var chosen = styler.selectedIndex;
+            console.log(chosen);
+
+            switch (chosen) {
+                case 0:
+                    colorBackground = "#E9E9E9";
+                    colorBorder = "#424242";
+                    colorBackgroundBefore = "#BCBCBC";
+                    break;
+                case 1:
+                    colorBackground = "#00FF00";
+                    colorBorder = "#FFFF00";
+                    colorBackgroundBefore = "#0000FF";
+                    break;
+            }
+
+
+            document.getElementById("wrapper").style.background = colorBackground;
+            resetFunction();
+        }
+
     </script>
     <style>
         html, body {
-            background-color: #E9E9E9;
+            margin: 0px;
+            padding: 0px;
         }
-        #mySelect{
-            margin:0 auto;
+        select{
+            margin: 0px auto;
             display: block;
+            border-radius:10px;
+            text-align:center;
         }
         button {
             margin: 5px auto;
             display:block;
             text-align:center;
+            border-radius:10px;
         }
-
+        #wrapper{
+            width:100%;
+            height:100%;
+            margin: 0px auto;
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
+    <div id="wrapper">
     <select id="mySelect">
         <option> 3x3</option>
         <option> 4x4</option>
@@ -225,10 +285,17 @@
         <option> 8x8</option>
         <option> 9x9</option>
     </select>
+    <select id="styler" style="margin-top:5px;">
+        <option>Gray Booker</option>
+        <option>Zjarana Zielień</option>
+    </select>
     <button id="soundsToggler">Wyłącz dźwięk.</button>
     <button id="resetter">Reset</button>
     <div id="mainDiv">
 
     </div>
+        <button id="back">Cofnij</button>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
 </body>
 </html>
