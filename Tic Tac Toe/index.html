@@ -5,17 +5,23 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
     <title>Hello buttons.</title>
+    <script src="jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
     <script>
-        window.addEventListener("load", onLoad, false);
+        document.addEventListener("deviceready", onDeviceReady, false);
         //Zmienne globalne
         var width = (window.innerWidth > 0) ? (window.innerWidth / 100) * 60 : (screen.width / 100) * 60;
         var size = 3;
         var mainLogicArray = [];
         var winner = "z";
         var safetyCounter = 0;
+        //Android path holder
+        var android_path_holder = "/android_asset/www/"
         //Dźwięki
-        var dzwiekX = new Audio("sfx/x.wav");
-        var dzwiekY = new Audio("sfx/y.wav");
+        var pathX = "sfx/x.wav";
+        var pathY = "sfx/y.wav";
+        var dzwiekX;
+        var dzwiekY;
         //Konfiguracja
         var sounds = true;
         //Cofanie
@@ -24,9 +30,31 @@
         var colorBackground = "#E9E9E9";
         var colorBorder = "#424242";
         var colorBackgroundBefore = "#BCBCBC";
+        //Obrazki
+        var obrazekX = "img/krzyz.png";
+        var obrazekY = "img/kolo.png";
+        
 
 
+        function onDeviceReady() {
+            document.addEventListener("menubutton", menuFunction, false);
+            document.addEventListener("backbutton", backFunction, false);
+            document.getElementById("menu").style.visibility = "hidden";
+            onLoad();
+            if (device.platform) {
+                dzwiekX = new Media(android_path_holder + pathX, success, error_error);
+                dzwiekY = new Media(android_path_holder + pathY, success, error_error);
+            } else {
+                dzwiekX = new Audio(pathX);
+                dzwiekY = new Audio(pathY);
+            }
+            /*
+            document.addEventListener("volumeupbutton", unMuteSounds, false);
+            document.addEventListener("volumedownbutton", muteSounds, false);
+            */
+        }
         function onLoad() {
+            getWindowSize();
             ArrayToNothing();
             addBig(width);
             addSmallDivs(size, width);
@@ -34,11 +62,90 @@
             buttonStyle();
         }
 
-        function ArrayToNothing() {
-            for (var i = 0; i < size; i++) {
-                mainLogicArray[i] = []
-                for (var j = 0; j < size; j++)
-                    mainLogicArray[i][j] = "z";
+        function getWindowSize() {
+            if (window.innerWidth > window.innerHeight) {
+                width = window.innerHeight/100*80;
+            }
+        }
+
+        //Tworzenie pola gry
+        function addBig(width) {
+            var div = document.getElementById("mainDiv");
+            div.style.width = width + "px";
+            div.style.height = width + "px";
+            div.style.position = "relative";
+            div.style.margin = "0px auto";
+            document.getElementById("wrapper").style.background = colorBackground;
+            document.getElementById("menu").style.background = colorBackground;
+        }
+        function addSmallDivs(wielkosc, width) {
+            var main = document.getElementById("mainDiv");
+            for (var j = 0; j < wielkosc ; j++) {
+                for (var i = 0; i < wielkosc; i++) {
+                    var small = document.createElement("div");
+                    main.appendChild(small);
+                    var zokroglony_rozmiar = Math.round(width / wielkosc);
+                    small.style.width = zokroglony_rozmiar + "px";
+                    small.style.height = zokroglony_rozmiar + "px";
+                    small.style.position = "absolute";
+                    small.style.left = i * zokroglony_rozmiar + "px";
+                    small.style.top = j * zokroglony_rozmiar + "px";
+                    small.style.border = "solid 1px";
+                    small.style.borderColor = colorBorder;
+                    small.style.background = colorBackgroundBefore;
+                    small.addEventListener("mousedown", onDown, false);
+                    small.id = i + "" + j;
+
+                    //Refreshing based on table
+                    if (mainLogicArray[i][j] != "z") {
+                        var img = document.createElement("img");
+                        small.appendChild(img);
+                        small.style.background = colorBackground;
+                        img.width = width*0.90 / size;
+
+                        if (mainLogicArray[i][j] == "x") {
+                            img.src = obrazekX;
+                        } else {
+                            img.src = obrazekY;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Początek logiki gry
+        var stan = true;
+        function onDown(e) {
+            var klikniety = e.target;
+            var img = document.createElement("img");
+            klikniety.appendChild(img);
+            klikniety.removeEventListener("mousedown", onDown);
+            klikniety.style.background = colorBackground;
+            img.width = (width/size)*0.90;
+
+            if (stan) {
+                img.src = obrazekX;
+                mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "x";
+                dzwiekX.play();
+                safetyCounter++;
+            } else {
+                img.src = obrazekY;
+                mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "y";
+                dzwiekY.play();
+            }
+            tempBack = klikniety.id;
+            stan = !stan;
+
+            if (safetyCounter >= 2) {
+                whoIsTheWinner();
+                if (winner == "x") alert("Wygrał gracz pierwszy.");
+                else if (winner == "y") alert("Wygrał gracz drugi.");
+                if (winner != "z")
+                    if (confirm("Czy chcesz zagrać ponownie?")) resetFunction();
+            }
+            if (safetyCounter == Math.floor(size * size / 2) + size % 2) {
+                if (confirm("Remis, chcesz zagrać ponownie?"))
+                    resetFunction();
             }
         }
 
@@ -53,218 +160,62 @@
 
         }
 
-        //Tworzenie pola gry
-        function addBig(width) {
-            var div = document.getElementById("mainDiv");
-            div.style.width = width + "px";
-            div.style.height = width + "px";
-            div.style.position = "relative";
-            div.style.margin = "0 auto";
-            document.getElementById("wrapper").style.background = colorBackground;
-        }
-
-        function addSmallDivs(wielkosc, width) {
-            var main = document.getElementById("mainDiv");
-            for (var j = 0; j < wielkosc ; j++) {
-                for (var i = 0; i < wielkosc; i++) {
-                    var small = document.createElement("div");
-                    main.appendChild(small);
-                    small.style.width = (width / wielkosc) + "px";
-                    small.style.height = (width / wielkosc) + "px";
-                    small.style.position = "absolute";
-                    small.style.left = i * (width / wielkosc) + "px";
-                    small.style.top = j * (width / wielkosc) + "px";
-                    small.style.border = "solid";
-                    small.style.borderColor = colorBorder;
-                    small.style.background = colorBackgroundBefore;
-                    small.addEventListener("mousedown", onDown, false);
-                    small.id = i + "" + j;
-                }
-            }
-        }
-
-        //Początek logiki gry
-        var stan = true;
-        function onDown(e) {
-            var klikniety = e.target;
-            var img = document.createElement("img");
-            klikniety.appendChild(img);
-            klikniety.removeEventListener("mousedown", onDown);
-            //zmienic 3 na argument ze switcha...
-            img.width = width / size;
-
-            console.log(e.target);
-
-            klikniety.style.background = colorBackground;
-            if (stan) {
-                img.src = "img/krzyz.png";
-                mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "x";
-                dzwiekX.play();
-                safetyCounter++;
-            } else {
-                img.src = "img/kolo.png";
-                mainLogicArray[parseInt(klikniety.id[0])][parseInt(klikniety.id[1])] = "y";
-                dzwiekY.play();
-            }
-            tempBack = klikniety.id;
-            stan = !stan;
-
-            if (safetyCounter >= 2) {
-                whoIsTheWinner();
-                if (winner == "x") alert("Wygrał gracz pierwszy.");
-                else if (winner == "y") alert("Wygrał gracz drugi.");
-                if (winner != "z") if (confirm("Czy chcesz zagrać ponownie?")) resetFunction();
-            }
-            if (safetyCounter == Math.floor(size * size / 2) + size%2) alert("Remis");
-        }
-
-        //Sprawdzenie kolumny
-        function checkCol() {
-            for (var i = 0; i < size; i++)
-                for(var j=0; j < size;j++)
-                    if (mainLogicArray[i][j] == mainLogicArray[i][j + 1] && mainLogicArray[i][j + 1] == mainLogicArray[i][j + 2] && mainLogicArray[i][j] != "z" && winner=="z") {
-                        console.log(mainLogicArray[i][j]);
-                        winner = mainLogicArray[i][j];
-                        break;
-                    }
-        }
-        //Sprawdzanie wiersza, tu zwraca dziwny błąd
-        function checkRow() {
-            for (var i = 0; i < size-2; i++)
-                for (var j = 0; j < size; j++)
-                    if (mainLogicArray[i][j] == mainLogicArray[i+1][j] && mainLogicArray[i+1][j]==mainLogicArray[i+2][j] && mainLogicArray[i][j] != "z" && mainLogicArray[i+1][j] != "z" && winner == "z") {
-                        console.log(mainLogicArray[i][j]);
-                        winner = mainLogicArray[i][j];
-                        break;
-                    }
-        }
-        //Sprawdzenie przekatnej
-        function checkDiag() {
-            for (var i = 0; i < size - 2; i++) {
-                for (var j = 0; j < size - 2; j++) {
-                    if (mainLogicArray[i][j] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j + 2] && winner=="z") {
-                        if (mainLogicArray[i + 1][j + j] != "z") winner = mainLogicArray[i+1][j+1];
-                    }
-                }
-            }
-            if (winner == "z") {
-                for (var i = 0; i < size - 2 ; i++) {
-                    for (var j = 0; j < size - 2; j++) {
-                        if (mainLogicArray[i][j + 2] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j] && winner == "z") {
-                            if (mainLogicArray[i + 1][j + j] != "z") winner = mainLogicArray[i + 1][j + 1];
-                        }
-                    }
-                }
-            }
-        }
-
-        //Check all
-        function whoIsTheWinner() {
-            if (winner != "x" && winner != "y") checkRow();
-            if (winner != "x" && winner != "y") checkCol();
-            if (winner != "x" && winner != "y") checkDiag();
-            
-        }
-
-        // Stylujemy
-        function selectStyle() {
-            select = document.getElementById("mySelect");
-            select.style.width = width + "px";
-            select.addEventListener("change", onChange, false);
-            styler = document.getElementById("styler");
-            styler.style.width = width + "px";
-            styler.addEventListener("change", changeStyle, false);
+        function menuFunction() {
+            menuVisibility = document.getElementById("menu").style.visibility;
+            if (menuVisibility == "hidden") document.getElementById("menu").style.visibility = "visible";
+            else document.getElementById("menu").style.visibility = "hidden";
         }
 
         function backFunction() {
-            stan = !stan;
-            mainLogicArray[parseInt(tempBack[0])][parseInt(tempBack[1])] = "z";
-            document.getElementById(tempBack).innerHTML = "<img />";
-            document.getElementById(tempBack).style.background = colorBackgroundBefore;
-            document.getElementById(tempBack).addEventListener("click", onDown, false);
+            if (mainLogicArray[parseInt(tempBack[0])][parseInt(tempBack[1])] != "z") {
+                stan = !stan;
+                mainLogicArray[parseInt(tempBack[0])][parseInt(tempBack[1])] = "z";
+                document.getElementById(tempBack).innerHTML = "<img />";
+                document.getElementById(tempBack).style.background = colorBackgroundBefore;
+                document.getElementById(tempBack).addEventListener("click", onDown, false);
+            }
         }
+
         function resetFunction() {
+            ArrayToNothing();
+            refreshFunction();
+        }
+
+        function refreshFunction() {
             var div = document.getElementById("mainDiv");
             div.style.background = colorBackground;
             div.innerHTML = "";
-            ArrayToNothing();
             addSmallDivs(size, width);
-            winner="z";
+            winner = "z";
             safetyCounter = 0;
             stan = true;
         }
-        function buttonStyle() {
-            soundsButton = document.getElementById("soundsToggler");
-            resetButton = document.getElementById("resetter");
-            backbutton = document.getElementById("back")
-            soundsButton.addEventListener("click", toggleSounds, false);
-            resetButton.addEventListener("click", resetFunction, false);
-            document.addEventListener("backbutton", backFunction, false);
-            backbutton.addEventListener("click", backFunction, false);
-            soundsButton.style.width = width + "px";
-            resetButton.style.width = width + "px";
-            backbutton.style.width = width + "px";
-            //document.addEventListener("backbutton", backFunction, false);
-        }
-        function muteSounds() {
-            dzwiekX.muted = true;
-            dzwiekY.muted = true;
-        }
-        function unMuteSounds() {
-            dzwiekX.muted = false;
-            dzwiekY.muted = false;
-        }
-        function toggleSounds (){
-            if(sounds){
-                muteSounds();
-                sounds = !sounds;
-                soundsButton.innerHTML = "Włącz dźwięk.";
-            } else {
-                unMuteSounds();
-                sounds = !sounds;
-                soundsButton.innerHTML = "Wyłącz dźwięk.";
-            }
-        }
-        function changeStyle() {
-            var styler = document.getElementById("styler");
-            var chosen = styler.selectedIndex;
-            console.log(chosen);
-
-            switch (chosen) {
-                case 0:
-                    colorBackground = "#E9E9E9";
-                    colorBorder = "#424242";
-                    colorBackgroundBefore = "#BCBCBC";
-                    break;
-                case 1:
-                    colorBackground = "#00FF00";
-                    colorBorder = "#FFFF00";
-                    colorBackgroundBefore = "#0000FF";
-                    break;
-            }
-
-
-            document.getElementById("wrapper").style.background = colorBackground;
-            resetFunction();
-        }
-
     </script>
+    <script type="text/javascript" src="logiks.js"></script>
+    <script type="text/javascript" src="Styles.js"></script>
+    <script type="text/javascript" src="dzwieki.js"></script>
+    
     <style>
         html, body {
             margin: 0px;
             padding: 0px;
+            height:100%;
         }
-        select{
+        select {
             margin: 0px auto;
             display: block;
-            border-radius:10px;
-            text-align:center;
+            border-radius: 10px;
+            border: solid 1px;
+            padding: 10px 20px;
+            text-align: center;
         }
         button {
             margin: 5px auto;
             display:block;
             text-align:center;
             border-radius:10px;
+            border:solid 1px;
+            padding:10px 20px;
         }
         #wrapper{
             width:100%;
@@ -272,30 +223,48 @@
             margin: 0px auto;
             padding-top: 10px;
         }
+        #menu {
+            z-index:1000;
+            position:fixed;
+            top:0;
+            width:100%;
+            height:100%;
+        }
+        img {
+            position:absolute;
+            top:0;
+            bottom:0;
+            left:0;
+            right:0;
+            margin:auto;
+        }
     </style>
 </head>
 <body>
     <div id="wrapper">
-    <select id="mySelect">
-        <option> 3x3</option>
-        <option> 4x4</option>
-        <option> 5x5</option>
-        <option> 6x6</option>
-        <option> 7x7</option>
-        <option> 8x8</option>
-        <option> 9x9</option>
-    </select>
-    <select id="styler" style="margin-top:5px;">
-        <option>Gray Booker</option>
-        <option>Zjarana Zielień</option>
-    </select>
-    <button id="soundsToggler">Wyłącz dźwięk.</button>
-    <button id="resetter">Reset</button>
-    <div id="mainDiv">
+        
+    <div id="mainDiv" style="margin:5px auto;">
 
     </div>
+        <button id="resetter" style="margin-top:15px;">Reset</button>
         <button id="back">Cofnij</button>
+        
     </div>
-    <script type="text/javascript" src="cordova.js"></script>
+    <div id="menu" style="visibility: hidden;">
+        <select id="mySelect">
+            <option> 3x3</option>
+            <option> 4x4</option>
+            <option> 5x5</option>
+            <option> 6x6</option>
+            <option> 7x7</option>
+            <option> 8x8</option>
+            <option> 9x9</option>
+        </select>
+        <select id="styler" style="margin-top:5px;">
+            <option>Gray Booker</option>
+            <option>Zombie...</option>
+        </select>
+        <button id="soundsToggler">Wyłącz dźwięk.</button>
+    </div>
 </body>
 </html>
