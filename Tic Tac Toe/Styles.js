@@ -19,9 +19,10 @@
             obrazekY = "img/kolo1.png";
             break;
     }
+    $(".page").css("background", colorBackground);
+    $(".button").css("background", colorBackground);
 
     menu.style.background = colorBackground;
-    document.getElementById("wrapper").style.background = colorBackground;
     resetFunction();
 }
 
@@ -35,6 +36,9 @@ function buttonStyle() {
     soundsButton.style.width = width + "px";
     resetButton.style.width = width + "px";
     backbutton.style.width = width / 3 * 2 + "px";
+    soundsButton.style.background = colorBackgroundBefore;
+    backbutton.style.background = colorBackgroundBefore;
+    resetButton.style.background = colorBackgroundBefore;
 }
 function selectStyle() {
     select = document.getElementById("mySelect");

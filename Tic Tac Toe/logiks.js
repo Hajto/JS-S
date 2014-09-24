@@ -43,7 +43,7 @@ function checkDiag() {
         for (var i = 0; i < size - 2 ; i++) {
             for (var j = 0; j < size - 2; j++) {
                 if (mainLogicArray[i][j + 2] == mainLogicArray[i + 1][j + 1] && mainLogicArray[i + 1][j + 1] == mainLogicArray[i + 2][j] && winner == "z") {
-                    if (mainLogicArray[i + 1][j + j] != "z") winner = mainLogicArray[i + 1][j + 1];
+                    if (mainLogicArray[i + 1][j + 1] != "z") winner = mainLogicArray[i + 1][j + 1];
                 }
             }
         }
