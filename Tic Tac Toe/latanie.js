@@ -82,10 +82,9 @@ function circulateBack(xx) {
 /******************/
 
 function initiate() {
-    unFade();
+    $("#circle-div").fadeIn(2000);
     circulate(-r);
 }
-
 
 var lateUnit = 120;
 var jumpOpacity = 3;
@@ -98,21 +97,5 @@ function unFade() {
         document.getElementById("circle-div").style.opacity = (overlayer / 100);
         document.getElementById("circle-div").style.filter = "alpha(opacity=" + overlayer + ");" /* For IE8 and earlier */
         setTimeout("unFade()", lateUnit);
-    }
-}
-function unFade2() {
-    if (overlayer > 0) { //If color is not transparent yet
-        overlayer -= jumpOpacity; // decrease color darkness
-        document.getElementById("kocyk").style.opacity = (overlayer / 100);
-        document.getElementById("kocyk").style.filter = "alpha(opacity=" + overlayer + ");" /* For IE8 and earlier */
-        setTimeout("unFade2()", (lateUnit / 6));
-    }
-}
-function Fade() {
-    if (overlayer > 0) { //If color is not transparent yet
-        overlayer -= jumpOpacity; // decrease color darkness
-        document.getElementById("kocyk").style.opacity = (overlayer / 100);
-        document.getElementById("kocyk").style.filter = "alpha(opacity=" + overlayer + ");" /* For IE8 and earlier */
-        setTimeout("unFade2()", (lateUnit / 6));
     }
 }

@@ -107,7 +107,7 @@
                     small.style.border = "solid 1px";
                     small.style.borderColor = colorBorder;
                     small.style.background = colorBackgroundBefore;
-                    small.addEventListener("mousedown", onDown, false);
+                    small.addEventListener("click", onDown, false);
                     small.id = i + "" + j;
 
                     //Refreshing based on table
@@ -245,6 +245,7 @@
             left: 50%;
             margin-top: -200px;
             margin-left: -200px;
+            display:none;
         }
         #wrapper{
             width:100%;
@@ -255,7 +256,7 @@
         #menu {
             z-index:1000;
             position:fixed;
-            top:0;
+            top:50px;;
             width:100%;
             height:100%;
         }
@@ -292,6 +293,7 @@
     <div id="wrapper">
 
     <div data-role="page" id="loading">
+        <div data-role="header" data-position="fixed"><h1>Trwa ładowanie! </h1></div>
         <div id="circle-div">
             <img src="img/kolo.png" id="flag1" />
             <img src="img/krzyz.png" id="flag2" />
@@ -311,16 +313,30 @@
             </div>
         </div>
         <div data-role="content">
-            <div id="mainDiv" style="margin:5px auto;">
-
-            </div>
+            <div id="mainDiv" style="margin:5px auto;"></div>
             <!--<button id="resetter" style="margin-top:15px;">Reset</button>-->
             <div id="resetter" class="button">Reset</div>
             <!--<button id="back">Cofnij</button>-->
             <div id="back" class="button">Cofnij</div>
         </div>
     </div>
-    
+        <div data-role="page" id="page2" class="page">
+            <div data-role="header" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                        <li>
+                            <a href="#page1">Gra na jednym ekranie</a>
+                        </li>
+                        <li>
+                            <a href="#page2" ">OnLine</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div data-role="content">
+                <h1>Work in progress!</h1>
+            </div>
+        </div>
 
     <div id="menu" style="visibility: hidden;">
         <select id="mySelect">
