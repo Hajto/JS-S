@@ -50,9 +50,10 @@
                 $("#currentTheme").append(myStorage.getItem("temat"));
             }
             function changeColors(themeNew) {
-                $("#settings").removeClass("ui-body-" + theme).addClass("ui-body-" + themeNew);
-                $("#main").removeClass("ui-body-" + theme).addClass("ui-body-" + themeNew);
-                $("#logowanie").removeClass("ui-body-" + theme).addClass("ui-body-" + themeNew);
+                var temp = 
+                $("#settings").removeClass("ui-body-c ui-body-d ui-body-e ui-body-a ui-body-b").addClass("ui-body-" + themeNew);
+                $("#main").removeClass("ui-body-c ui-body-d ui-body-e ui-body-a ui-body-b").addClass("ui-body-" + themeNew);
+                $("#logowanie").removeClass("ui-body-c ui-body-d ui-body-e ui-body-a ui-body-b").addClass("ui-body-" + themeNew);
             }
         </script>
     </head>
