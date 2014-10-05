@@ -12,7 +12,7 @@
         <script>
             //gps 
             $("document").ready(function () {
-                var czas = new Date();
+                
                 //alert("Bang!");
                 //GPS
                 $("#kosmita").click(function () {
@@ -31,6 +31,7 @@
                 })
 
                 function onSucces(position) {
+                    var czas = new Date();
                     var dane = czas.toDateString() + " "+ czas.toLocaleTimeString() + "<br>" + "Longtitude:" + position.coords.longitude + "<br> " +"Latitude:"+ position.coords.latitude + "<br>" + "Altitude" +position.coords.altitude;
                     $("#lista").html("<li>" + dane + "</li>");
                     $("#lista").listview("refresh");
