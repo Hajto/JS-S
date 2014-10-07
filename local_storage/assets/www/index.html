@@ -10,18 +10,13 @@
         <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
         <script>
             var myStorage = window.localStorage;
-            var theme = "c";
+            var theme = "a";
             $(document).ready(function () {
+                $('#main').attr('data-theme', myStorage.getItem("temat"));
+                $('#settings').attr('data-theme', myStorage.getItem("temat"));
                 if (myStorage.getItem("login") != null) {
                     document.location.href = "#main";
                     getMainReady();
-                }
-                if (myStorage.getItem("temat") != null) {
-                    if (theme != myStorage.getItem("temat")) {
-                        theme = myStorage.getItem("temat");
-                        changeColors(theme);
-                    }
-                    
                 }
                 $("#submit").click(function () {
                     myStorage.setItem("login", $("#login").val());
@@ -41,7 +36,6 @@
                     theme = this.value;
                     myStorage.removeItem("temat");
                     myStorage.setItem("temat", this.value);
-                    
                 });
             });
             function getMainReady() {
@@ -49,11 +43,33 @@
                 $("#lastLogged").append(myStorage.getItem("data") + " o godzinie " + myStorage.getItem("czas"));
                 $("#currentTheme").append(myStorage.getItem("temat"));
             }
-            function changeColors(themeNew) {
-                var temp = 
-                $("#settings").removeClass("ui-body-c ui-body-d ui-body-e ui-body-a ui-body-b").addClass("ui-body-" + themeNew);
-                $("#main").removeClass("ui-body-c ui-body-d ui-body-e ui-body-a ui-body-b").addClass("ui-body-" + themeNew);
-                $("#logowanie").removeClass("ui-body-c ui-body-d ui-body-e ui-body-a ui-body-b").addClass("ui-body-" + themeNew);
+            function changeColors(selectedTheme) {
+				
+                var currentTheme = $('#main').attr('data-theme');
+
+                $('.ui-body-' + currentTheme + ":not(label)").each(function(){
+                    $(this).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme);    
+                });
+
+                $('.ui-btn-up-' + currentTheme + ":not(label)").each(function(){
+                    $(this).removeClass('ui-btn-up-' + currentTheme).addClass('ui-btn-up-' + selectedTheme);    
+                });
+
+                $('.ui-btn-down-' + currentTheme + ":not(label)").each(function(){
+                    $(this).removeClass('ui-btn-down-' + currentTheme).addClass('ui-btn-down-' + selectedTheme
+                });
+                $('.ui-bar-' + currentTheme + ":not(label)").each(function(){
+                    $(this).removeClass('ui-bar-' + currentTheme).addClass('ui-bar-' + selectedTheme);    
+                });
+
+                $('#main').find('*[data-theme]'+ ":not(label)").each(function(index){
+                    $(this).attr('data-theme',selectedTheme);
+                });
+                $('#settings').find('*[data-theme]'+ ":not(label)").each(function(index){
+                    $(this).attr('data-theme',selectedTheme);
+                });
+                $('#main').attr('data-theme', selectedTheme).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme).trigger('create');
+                //$('#settings').attr('data-theme', selectedTheme).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme).trigger('create');
             }
         </script>
     </head>
@@ -76,7 +92,7 @@
             <div data-role="content">
                 <div id="welcomeGuest">Witaj: </div>
                 <div id="lastLogged">Ostatnio logowałeś się: </div>
-                <div id="currentTheme">Wybrany temat: </div>
+                <div id="currentTheme">Ostatnio wybrany temat: </div>
             </div>
             <div data-role="footer" data-position="fixed" id="logout"><h1>Wyloguj!</h1></div>
         </div>
