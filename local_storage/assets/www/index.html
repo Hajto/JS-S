@@ -12,12 +12,6 @@
             var myStorage = window.localStorage;
             var theme = "a";
             $(document).ready(function () {
-                $('#main').attr('data-theme', myStorage.getItem("temat"));
-                $('#settings').attr('data-theme', myStorage.getItem("temat"));
-                if (myStorage.getItem("login") != null) {
-                    document.location.href = "#main";
-                    getMainReady();
-                }
                 $("#submit").click(function () {
                     myStorage.setItem("login", $("#login").val());
                     myStorage.setItem("czas", new Date().toLocaleTimeString());
@@ -37,6 +31,17 @@
                     myStorage.removeItem("temat");
                     myStorage.setItem("temat", this.value);
                 });
+                if (myStorage.getItem("login") != null) {
+                    document.location.href = "#main";
+                    getMainReady();
+                }
+            });
+            $(document).on("pageinit", "#main", function (event) {
+                //setTimeout(function () {
+                    changeColors($('#main').attr("data-theme"));
+                    changeColors(myStorage.getItem("temat"));
+                    buttonyNaMiejsca();
+               // }, 150);
             });
             function getMainReady() {
                 $("#welcomeGuest").append(myStorage.getItem("login"));
@@ -44,24 +49,20 @@
                 $("#currentTheme").append(myStorage.getItem("temat"));
             }
             function changeColors(selectedTheme) {
-				
                 var currentTheme = $('#main').attr('data-theme');
-
+                console.log(currentTheme);
                 $('.ui-body-' + currentTheme + ":not(label)").each(function(){
                     $(this).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme);    
                 });
-
                 $('.ui-btn-up-' + currentTheme + ":not(label)").each(function(){
                     $(this).removeClass('ui-btn-up-' + currentTheme).addClass('ui-btn-up-' + selectedTheme);    
                 });
-
                 $('.ui-btn-down-' + currentTheme + ":not(label)").each(function(){
-                    $(this).removeClass('ui-btn-down-' + currentTheme).addClass('ui-btn-down-' + selectedTheme
+                    $(this).removeClass('ui-btn-down-' + currentTheme).addClass('ui-btn-down-' + selectedTheme);
                 });
                 $('.ui-bar-' + currentTheme + ":not(label)").each(function(){
                     $(this).removeClass('ui-bar-' + currentTheme).addClass('ui-bar-' + selectedTheme);    
                 });
-
                 $('#main').find('*[data-theme]'+ ":not(label)").each(function(index){
                     $(this).attr('data-theme',selectedTheme);
                 });
@@ -69,7 +70,13 @@
                     $(this).attr('data-theme',selectedTheme);
                 });
                 $('#main').attr('data-theme', selectedTheme).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme).trigger('create');
-                //$('#settings').attr('data-theme', selectedTheme).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme).trigger('create');
+                $('#settings').attr('data-theme', selectedTheme).removeClass('ui-body-' + currentTheme).addClass('ui-body-' + selectedTheme).trigger('create');
+            }
+            function buttonyNaMiejsca() {
+                $("#bLabel").removeClass("ui-btn-up-a").addClass("ui-btn-up-b");
+                $("#cLabel").removeClass("ui-btn-up-a").addClass("ui-btn-up-c");
+                $("#dLabel").removeClass("ui-btn-up-a").addClass("ui-btn-up-d");
+                $("#eLabel").removeClass("ui-btn-up-a").addClass("ui-btn-up-e");
             }
         </script>
     </head>
@@ -79,51 +86,51 @@
             <input type="text" placeholder="Login" id="login"/>
             <input type="submit" id="submit" />
         </div>
-        <div data-role="page" id="main">
-            <div data-role="header" data-position="fixed">
+        <div data-role="page" id="main" data-theme="a">
+            <div data-role="header" data-position="fixed" data-theme="a">
                 <h1>Main Page</h1>
-                <div data-role="navbar">
+                <div data-role="navbar" data-theme="a">
                     <ul>
                         <li><a href="#main" class="ui-btn-active">Main</a></li>
                         <li><a href="#settings">Settings</a></li>
                     </ul>
                 </div>
             </div>
-            <div data-role="content">
+            <div data-role="content" ">
                 <div id="welcomeGuest">Witaj: </div>
                 <div id="lastLogged">Ostatnio logowałeś się: </div>
                 <div id="currentTheme">Ostatnio wybrany temat: </div>
             </div>
-            <div data-role="footer" data-position="fixed" id="logout"><h1>Wyloguj!</h1></div>
+            <div data-role="footer" data-position="fixed" id="logout" data-theme="a"><h1>Wyloguj!</h1></div>
         </div>
-        <div data-role="page" id="settings">
-            <div data-role="header" id="headerSettings" data-position="fixed">
+        <div data-role="page" id="settings" data-theme="a">
+            <div data-role="header" id="headerSettings" data-position="fixed" data-theme="a">
                 <h1>Main Page</h1>
-                <div data-role="navbar">
+                <div data-role="navbar" data-theme="a">
                     <ul>
                         <li><a href="#main">Main</a></li>
                         <li><a href="#settings" class="ui-btn-active">Settings</a></li>
                     </ul>
                 </div>
             </div>
-            <div data-role="content">
-                <div id="#themer">
-                    <fieldset data-role="controlgroup" data-iconpos="right">
-                        <legend>Wybierz temat:</legend>
-                        <input type="radio" data-theme="a" name="radio-choice-w-6" id="radio-choice-w-6a" value="a" >
-                        <label for="radio-choice-w-6a">Theme A</label>
-                        <input type="radio" data-theme="b" name="radio-choice-w-6" id="radio-choice-w-6b" value="b">
-                        <label for="radio-choice-w-6b">Theme B</label>
-                        <input type="radio" data-theme="c" name="radio-choice-w-6" id="radio-choice-w-6c" value="c">
-                        <label for="radio-choice-w-6c">Theme C</label>
-                        <input type="radio" data-theme="d" name="radio-choice-w-6" id="radio-choice-w-6d" value="d">
-                        <label for="radio-choice-w-6d">Theme D</label>
-                        <input type="radio" data-theme="e" name="radio-choice-w-6" id="radio-choice-w-6e" value="e">
-                        <label for="radio-choice-w-6e">Theme E</label>
-                    </fieldset>
+            <div data-role="content" style="margin-top:50px;">
+                <div id="themer">
+                <fieldset data-role="controlgroup" data-iconpos="right">
+                    <legend><h1>Wybierz temat:</h1></legend>
+                    <input type="radio" data-theme="a" name="radio-choice-w-6" id="radio-choice-w-6a" value="a">
+                    <label for="radio-choice-w-6a" id="aLabel">Theme A</label>
+                    <input type="radio" data-theme="b" name="radio-choice-w-6" id="radio-choice-w-6b" value="b">
+                    <label for="radio-choice-w-6b" id="bLabel">Theme B</label>
+                    <input type="radio" data-theme="c" name="radio-choice-w-6" id="radio-choice-w-6c" value="c">
+                    <label for="radio-choice-w-6c" id="cLabel">Theme C</label>
+                    <input type="radio" data-theme="d" name="radio-choice-w-6" id="radio-choice-w-6d" value="d">
+                    <label for="radio-choice-w-6d" id="dLabel">Theme D</label>
+                    <input type="radio" data-theme="e" name="radio-choice-w-6" id="radio-choice-w-6e" value="e">
+                    <label for="radio-choice-w-6e" id="eLabel">Theme E</label>
+                </fieldset>
                 </div>
             </div>
-            <div data-role="footer" data-position="fixed" id="logout"><h1>Wyloguj!</h1></div>
+            <div data-role="footer" data-position="fixed" id="logout" data-theme="a"><h1>Wyloguj!</h1></div>
         </div>
     </body>
 </html>
